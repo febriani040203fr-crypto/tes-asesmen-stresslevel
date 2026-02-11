@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Tes Tingkat Stres (PSS-10)</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+}
+h1 {
+    text-align: center;
+}
+.question {
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin: 6px 0;
+}
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+button:hover {
+    background: #0056b3;
+}
+.result {
+    margin-top: 30px;
+    background: #eef2f5;
+    padding: 20px;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Tes Tingkat Stres (PSS-10)</h1>
+
+<p>
+Tes ini bertujuan untuk membantu kamu memahami <b>seberapa besar stres yang kamu rasakan dalam 1 bulan terakhir</b>.
+Tidak ada jawaban benar atau salah. Jawablah dengan jujur sesuai kondisi kamu.
+</p>
+
+<form id="pssForm">
+
+<script>
+const questions = [
+"Seberapa sering kamu merasa kesal karena sesuatu terjadi secara tiba-tiba?",
+"Seberapa sering kamu merasa tidak mampu mengendalikan hal-hal penting dalam hidupmu?",
+"Seberapa sering kamu merasa gugup atau stres?",
+"Seberapa sering kamu merasa yakin bisa menangani masalah pribadi?",
+"Seberapa sering kamu merasa bahwa semuanya berjalan sesuai keinginanmu?",
+"Seberapa sering kamu merasa tidak sanggup menghadapi semua hal yang harus dilakukan?",
+"Seberapa sering kamu merasa mampu mengendalikan hal-hal yang mengganggumu?",
+"Seberapa sering kamu merasa berada dalam kendali atas hidupmu?",
+"Seberapa sering kamu marah karena hal-hal di luar kendalimu?",
+"Seberapa sering kamu merasa masalah datang bertumpuk hingga sulit diatasi?"
+];
+
+const reverseItems = [3,4,6,7]; // item 4,5,7,8 (index mulai 0)
+
+questions.forEach((q, i) => {
+    document.write(`
+        <div class="question">
+            <b>${i+1}. ${q}</b>
+            <label><input type="radio" name="q${i}" value="0" required> Tidak Pernah</label>
+            <label><input type="radio" name="q${i}" value="1"> Jarang</label>
+            <label><input type="radio" name="q${i}" value="2"> Kadang-kadang</label>
+            <label><input type="radio" name="q${i}" value="3"> Sering</label>
+            <label><input type="radio" name="q${i}" value="4"> Sangat Sering</label>
+        </div>
+    `);
+});
+</script>
+
+<button type="submit">Lihat Hasil</button>
+</form>
+
+<div id="result" class="result" style="display:none;"></div>
+
+</div>
+
+<script>
+document.getElementById("pssForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    let totalScore = 0;
+    let helplessness = 0; // item 1,2,3,6,9,10
+    let selfEfficacy = 0; // item 4,5,7,8
+
+    for (let i = 0; i < 10; i++) {
+        let value = parseInt(document.querySelector(`input[name="q${i}"]:checked`).value);
+
+        if (reverseItems.includes(i)) {
+            value = 4 - value;
+            selfEfficacy += value;
+        } else {
+            helplessness += value;
+        }
+
+        totalScore += value;
+    }
+
+    let averageScore = (totalScore / 10).toFixed(2);
+
+    let level = "";
+    if (totalScore <= 13) level = "Stres Rendah";
+    else if (totalScore <= 26) level = "Stres Sedang";
+    else level = "Stres Tinggi";
+
+    let resultHTML = `
+        <h2>Hasil Tes Tingkat Stres</h2>
+        <p><b>Total Skor:</b> ${totalScore} (rentang 0–40)</p>
+        <p><b>Rata-rata Skor:</b> ${averageScore} (0 = Tidak Pernah, 4 = Sangat Sering)</p>
+
+        <hr>
+
+        <p><b>Perceived Helplessness:</b> ${helplessness}</p>
+        <p>Menunjukkan sejauh mana kamu merasa kurang memiliki kendali atas situasi atau reaksi emosionalmu.</p>
+
+        <p><b>Lack of Self-Efficacy:</b> ${selfEfficacy}</p>
+        <p>Menunjukkan seberapa besar kamu merasa mampu atau tidak mampu menangani masalah.</p>
+
+        <hr>
+
+        <h3>Kesimpulan</h3>
+        <p>Berdasarkan hasil tes ini, tingkat stres yang kamu alami berada pada kategori:</p>
+        <h2>${level}</h2>
+
+        <p>
+        Hasil ini menggambarkan kondisi stres yang kamu rasakan secara umum dibandingkan dengan orang lain.
+        Skor mendekati <b>50 persentil</b> menunjukkan tingkat stres rata-rata di masyarakat.
+        </p>
+
+        <p><i>Catatan: Tes ini bersifat non-diagnostik dan hanya untuk refleksi diri.</i></p>
+    `;
+
+    document.getElementById("result").innerHTML = resultHTML;
+    document.getElementById("result").style.display = "block";
+});
+</script>
+
+</body>
+</html>
